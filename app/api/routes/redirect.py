@@ -15,18 +15,12 @@ from app.api.deps import (
 from app.core.exceptions import LinkNotFoundError
 from app.services.link import LinkService
 
-router = APIRouter(
-    tags=["redirect"]
-)
+router = APIRouter(tags=["redirect"])
 
 
 def get_service(
-    session: AsyncSession = Depends(
-        get_db_session
-    ),
-    redis: Redis = Depends(
-        get_redis
-    ),
+    session: AsyncSession = Depends(get_db_session),
+    redis: Redis = Depends(get_redis),
 ) -> LinkService:
     return LinkService(
         session=session,
@@ -34,30 +28,19 @@ def get_service(
     )
 
 
-@router.get(
-    "/{short_code}"
-)
+@router.get("/{short_code}")
 async def redirect_to_original(
     short_code: str,
-    service: LinkService = Depends(
-        get_service
-    ),
+    service: LinkService = Depends(get_service),
 ) -> RedirectResponse:
-
     try:
-        original_url = await service.resolve_redirect(
-            short_code
-        )
+        original_url = await service.resolve_redirect(short_code)
 
-        await service.record_click(
-            short_code
-        )
+        await service.record_click(short_code)
 
         return RedirectResponse(
             url=original_url,
-            status_code=(
-                status.HTTP_307_TEMPORARY_REDIRECT
-            ),
+            status_code=(status.HTTP_307_TEMPORARY_REDIRECT),
         )
 
     except LinkNotFoundError as exc:

@@ -1,4 +1,5 @@
-from unittest.mock import AsyncMock
+from typing import Any, cast
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -9,17 +10,27 @@ from app.services.link import LinkService
 async def test_resolve_redirect_cache_hit() -> None:
     session = AsyncMock()
     redis = AsyncMock()
-
     service = LinkService(session=session, redis=redis)
 
-    service.cache.get = AsyncMock(
-        return_value="https://example.com"
-    )
+    assert service.cache is not None
+    cache = service.cache
 
-    service.repository.get_by_short_code = AsyncMock()
+    mock_cache_get = AsyncMock(return_value="https://example.com")
+    mock_get_by_short_code = AsyncMock()
 
-    result = await service.resolve_redirect("abc1234")
+    with (
+        patch.object(
+            cast(Any, cache),
+            "get",
+            mock_cache_get,
+        ),
+        patch.object(
+            cast(Any, service.repository),
+            "get_by_short_code",
+            mock_get_by_short_code,
+        ),
+    ):
+        result = await service.resolve_redirect("abc1234")
 
     assert result == "https://example.com"
-
-    service.repository.get_by_short_code.assert_not_awaited()
+    mock_get_by_short_code.assert_not_awaited()

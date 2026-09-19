@@ -17,18 +17,14 @@ class CacheService:
     async def get(self, key: str) -> str | None:
         try:
             value = await asyncio.wait_for(
-                 self.redis.get(key),
-                 timeout=self.timeout,
+                self.redis.get(key),
+                timeout=self.timeout,
             )
             return value.decode() if isinstance(value, bytes) else value
         except TimeoutError as exc:
-            raise CacheError(
-                f"Cache GET timed out: {key}"
-            ) from exc
+            raise CacheError(f"Cache GET timed out: {key}") from exc
         except Exception as exc:
-            raise CacheError(
-                f"Cache GET failed: {key}"
-            ) from exc
+            raise CacheError(f"Cache GET failed: {key}") from exc
 
     async def set(
         self,
@@ -52,13 +48,9 @@ class CacheService:
                     timeout=self.timeout,
                 )
         except TimeoutError as exc:
-            raise CacheError(
-                f"Cache SET timed out: {key}"
-            ) from exc
+            raise CacheError(f"Cache SET timed out: {key}") from exc
         except Exception as exc:
-            raise CacheError(
-                f"Cache SET failed: {key}"
-            ) from exc
+            raise CacheError(f"Cache SET failed: {key}") from exc
 
     async def delete(self, key: str) -> None:
         try:
@@ -67,13 +59,9 @@ class CacheService:
                 timeout=self.timeout,
             )
         except TimeoutError as exc:
-            raise CacheError(
-                f"Cache DELETE timed out: {key}"
-            ) from exc
+            raise CacheError(f"Cache DELETE timed out: {key}") from exc
         except Exception as exc:
-            raise CacheError(
-                f"Cache DELETE failed: {key}"
-            ) from exc
+            raise CacheError(f"Cache DELETE failed: {key}") from exc
 
     async def increment(
         self,
@@ -95,10 +83,6 @@ class CacheService:
             return value
 
         except TimeoutError as exc:
-            raise CacheError(
-                f"Cache INCREMENT timed out: {key}"
-            ) from exc
+            raise CacheError(f"Cache INCREMENT timed out: {key}") from exc
         except Exception as exc:
-            raise CacheError(
-                f"Cache INCREMENT failed: {key}"
-            ) from exc
+            raise CacheError(f"Cache INCREMENT failed: {key}") from exc

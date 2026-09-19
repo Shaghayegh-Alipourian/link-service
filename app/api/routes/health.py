@@ -8,34 +8,21 @@ from app.api.deps import (
     get_redis,
 )
 
-router = APIRouter(
-    tags=["health"]
-)
+router = APIRouter(tags=["health"])
 
 
 @router.get("/health")
 async def health() -> dict[str, str]:
-    return {
-        "status": "ok"
-    }
+    return {"status": "ok"}
 
 
 @router.get("/ready")
 async def readiness(
-    session: AsyncSession = Depends(
-        get_db_session
-    ),
-    redis: Redis = Depends(
-        get_redis
-    ),
+    session: AsyncSession = Depends(get_db_session),
+    redis: Redis = Depends(get_redis),
 ) -> dict[str, str]:
-
-    await session.execute(
-        text("SELECT 1")
-    )
+    await session.execute(text("SELECT 1"))
 
     await redis.ping()
 
-    return {
-        "status": "ready"
-    }
+    return {"status": "ready"}

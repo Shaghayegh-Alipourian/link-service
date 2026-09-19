@@ -16,16 +16,9 @@ def test_generate_short_code_custom_length() -> None:
 def test_generate_short_code_contains_valid_characters() -> None:
     code = generate_short_code()
 
-    allowed = (
-        "abcdefghijklmnopqrstuvwxyz"
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "0123456789"
-    )
+    allowed = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-    assert all(
-        character in allowed
-        for character in code
-    )
+    assert all(character in allowed for character in code)
 
 
 def test_generate_short_codes_are_not_identical() -> None:

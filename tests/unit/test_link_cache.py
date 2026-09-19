@@ -1,4 +1,5 @@
-from unittest.mock import AsyncMock
+from typing import Any, cast
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -10,30 +11,40 @@ from app.services.link import LinkService
 async def test_resolve_redirect_cache_hit() -> None:
     session = AsyncMock()
     redis = AsyncMock()
-
     service = LinkService(session=session, redis=redis)
 
-    service.cache.get = AsyncMock(
-        return_value="https://example.com"
-    )
-    service.repository.get_by_short_code = AsyncMock()
+    assert service.cache is not None
+    cache = service.cache
 
-    result = await service.resolve_redirect("abc1234")
+    mock_cache_get = AsyncMock(return_value="https://example.com")
+    mock_get_by_short_code = AsyncMock()
+
+    with (
+        patch.object(
+            cast(Any, cache),
+            "get",
+            mock_cache_get,
+        ),
+        patch.object(
+            cast(Any, service.repository),
+            "get_by_short_code",
+            mock_get_by_short_code,
+        ),
+    ):
+        result = await service.resolve_redirect("abc1234")
 
     assert result == "https://example.com"
-
-    service.repository.get_by_short_code.assert_not_awaited()
+    mock_get_by_short_code.assert_not_awaited()
 
 
 @pytest.mark.asyncio
 async def test_resolve_redirect_cache_miss() -> None:
     session = AsyncMock()
     redis = AsyncMock()
-
     service = LinkService(session=session, redis=redis)
 
-    service.cache.get = AsyncMock(return_value=None)
-
+    assert service.cache is not None
+    cache = service.cache
     link = Link(
         id=1,
         original_url="https://example.com",
@@ -41,17 +52,29 @@ async def test_resolve_redirect_cache_miss() -> None:
         clicks=0,
     )
 
-    service.repository.get_by_short_code = AsyncMock(
-        return_value=link
-    )
-    service.cache.set = AsyncMock()
+    mock_cache_get = AsyncMock(return_value=None)
+    mock_get_by_short_code = AsyncMock(return_value=link)
+    mock_cache_set = AsyncMock()
 
-    result = await service.resolve_redirect("abc1234")
+    with (
+        patch.object(
+            cast(Any, cache),
+            "get",
+            mock_cache_get,
+        ),
+        patch.object(
+            cast(Any, service.repository),
+            "get_by_short_code",
+            mock_get_by_short_code,
+        ),
+        patch.object(
+            cast(Any, cache),
+            "set",
+            mock_cache_set,
+        ),
+    ):
+        result = await service.resolve_redirect("abc1234")
 
     assert result == "https://example.com"
-
-    service.repository.get_by_short_code.assert_awaited_once_with(
-        "abc1234"
-    )
-
-    service.cache.set.assert_awaited_once()
+    mock_get_by_short_code.assert_awaited_once_with("abc1234")
+    mock_cache_set.assert_awaited_once()

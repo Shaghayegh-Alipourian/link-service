@@ -29,11 +29,7 @@ class LinkRepository:
         self,
         link_id: int,
     ) -> Link | None:
-        result = await self.session.execute(
-            select(Link).where(
-                Link.id == link_id
-            )
-        )
+        result = await self.session.execute(select(Link).where(Link.id == link_id))
 
         return result.scalar_one_or_none()
 
@@ -42,9 +38,7 @@ class LinkRepository:
         short_code: str,
     ) -> Link | None:
         result = await self.session.execute(
-            select(Link).where(
-                Link.short_code == short_code
-            )
+            select(Link).where(Link.short_code == short_code)
         )
 
         return result.scalar_one_or_none()
@@ -56,9 +50,7 @@ class LinkRepository:
         await self.session.execute(
             update(Link)
             .where(Link.short_code == short_code)
-            .values(
-                clicks=Link.clicks + 1
-            )
+            .values(clicks=Link.clicks + 1)
         )
 
         await self.session.flush()

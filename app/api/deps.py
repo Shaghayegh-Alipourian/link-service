@@ -9,9 +9,7 @@ from app.services.link import LinkService
 from app.services.rate_limit import RateLimitService
 
 
-async def get_db_session() -> (
-    AsyncGenerator[AsyncSession, None]
-):
+async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as session:
         yield session
 

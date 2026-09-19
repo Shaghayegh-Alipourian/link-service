@@ -23,11 +23,7 @@ class RateLimitService:
     ) -> None:
         self.redis = redis
         self.limit = settings.rate_limit if limit is None else limit
-        self.window = (
-            settings.rate_limit_window
-            if window is None
-            else window
-        )
+        self.window = settings.rate_limit_window if window is None else window
 
     async def check(self, client_id: str) -> None:
         key = f"rate_limit:{client_id}"
@@ -41,6 +37,5 @@ class RateLimitService:
 
         if int(count) > self.limit:
             raise RateLimitExceededError(
-                f"Rate limit exceeded: "
-                f"{self.limit} requests per {self.window} seconds."
+                f"Rate limit exceeded: {self.limit} requests per {self.window} seconds."
             )

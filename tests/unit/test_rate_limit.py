@@ -22,9 +22,7 @@ async def test_rate_limit_allows_request() -> None:
         window=60,
     )
 
-    await service.check(
-        "127.0.0.1"
-    )
+    await service.check("127.0.0.1")
 
     redis.eval.assert_awaited_once()
 
@@ -41,9 +39,5 @@ async def test_rate_limit_blocks_request() -> None:
         window=60,
     )
 
-    with pytest.raises(
-        RateLimitExceededError
-    ):
-        await service.check(
-            "127.0.0.1"
-        )
+    with pytest.raises(RateLimitExceededError):
+        await service.check("127.0.0.1")

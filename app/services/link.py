@@ -46,9 +46,7 @@ class LinkService:
         link = await self.repository.get_by_id(link_id)
 
         if link is None:
-            raise LinkNotFoundError(
-                f"Link with id '{link_id}' was not found."
-            )
+            raise LinkNotFoundError(f"Link with id '{link_id}' was not found.")
 
         return link
 
@@ -56,9 +54,7 @@ class LinkService:
         link = await self.repository.get_by_short_code(short_code)
 
         if link is None:
-            raise LinkNotFoundError(
-                f"Link '{short_code}' was not found."
-            )
+            raise LinkNotFoundError(f"Link '{short_code}' was not found.")
 
         return link
 
@@ -74,9 +70,7 @@ class LinkService:
         link = await self.repository.get_by_short_code(short_code)
 
         if link is None:
-            raise LinkNotFoundError(
-                f"Link '{short_code}' was not found."
-            )
+            raise LinkNotFoundError(f"Link '{short_code}' was not found.")
 
         if self.cache is not None:
             await self.cache.set(
@@ -93,7 +87,4 @@ class LinkService:
 
 
 def generate_short_code(length: int = 7) -> str:
-    return "".join(
-        secrets.choice(ALPHABET)
-        for _ in range(length)
-    )
+    return "".join(secrets.choice(ALPHABET) for _ in range(length))

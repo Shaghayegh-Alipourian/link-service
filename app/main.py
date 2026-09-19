@@ -34,7 +34,6 @@ logger = structlog.get_logger()
 async def lifespan(
     app: FastAPI,
 ) -> AsyncGenerator[None, None]:
-
     configure_logging()
 
     redis: Redis = create_redis()
@@ -52,15 +51,11 @@ async def lifespan(
         yield
 
     finally:
-        logger.info(
-            "application_shutdown_started"
-        )
+        logger.info("application_shutdown_started")
 
         await redis.aclose()
 
-        logger.info(
-            "application_stopped"
-        )
+        logger.info("application_stopped")
 
 
 app = FastAPI(
@@ -70,27 +65,15 @@ app = FastAPI(
 )
 
 
-app.add_middleware(
-    RequestIDMiddleware
-)
+app.add_middleware(RequestIDMiddleware)
 
 
-app.include_router(
-    health_router
-)
+app.include_router(health_router)
 
-app.include_router(
-    links_router
-)
+app.include_router(links_router)
 
-app.include_router(
-    redirect_router
-)
+app.include_router(redirect_router)
 
-app.include_router(
-    events_router
-)
+app.include_router(events_router)
 
-app.include_router(
-    tasks_router
-)
+app.include_router(tasks_router)

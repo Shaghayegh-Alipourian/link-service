@@ -1,10 +1,9 @@
-from unittest.mock import AsyncMock
+from typing import Any, cast
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from app.core.exceptions import (
-    LinkNotFoundError,
-)
+from app.core.exceptions import LinkNotFoundError
 from app.models.link import Link
 from app.services.link import LinkService
 
@@ -12,10 +11,7 @@ from app.services.link import LinkService
 @pytest.mark.asyncio
 async def test_get_by_id() -> None:
     session = AsyncMock()
-
-    service = LinkService(
-        session=session
-    )
+    service = LinkService(session=session)
 
     link = Link(
         id=1,
@@ -24,11 +20,14 @@ async def test_get_by_id() -> None:
         clicks=0,
     )
 
-    service.repository.get_by_id = AsyncMock(
-        return_value=link
-    )
+    mock_get_by_id = AsyncMock(return_value=link)
 
-    result = await service.get_by_id(1)
+    with patch.object(
+        cast(Any, service.repository),
+        "get_by_id",
+        mock_get_by_id,
+    ):
+        result = await service.get_by_id(1)
 
     assert result.id == 1
     assert result.short_code == "abc1234"
@@ -37,39 +36,32 @@ async def test_get_by_id() -> None:
 @pytest.mark.asyncio
 async def test_get_by_id_not_found() -> None:
     session = AsyncMock()
+    service = LinkService(session=session)
 
-    service = LinkService(
-        session=session
-    )
+    mock_get_by_id = AsyncMock(return_value=None)
 
-    service.repository.get_by_id = AsyncMock(
-        return_value=None
-    )
-
-    with pytest.raises(
-        LinkNotFoundError
+    with patch.object(
+        cast(Any, service.repository),
+        "get_by_id",
+        mock_get_by_id,
     ):
-        await service.get_by_id(999)
+        with pytest.raises(LinkNotFoundError):
+            await service.get_by_id(999)
 
 
 @pytest.mark.asyncio
 async def test_record_click() -> None:
     session = AsyncMock()
+    service = LinkService(session=session)
 
-    service = LinkService(
-        session=session
-    )
+    mock_increment_clicks = AsyncMock()
 
-    service.repository.increment_clicks = (
-        AsyncMock()
-    )
+    with patch.object(
+        cast(Any, service.repository),
+        "increment_clicks",
+        mock_increment_clicks,
+    ):
+        await service.record_click("abc1234")
 
-    await service.record_click(
-        "abc1234"
-    )
-
-    service.repository.increment_clicks.assert_awaited_once_with(
-        "abc1234"
-    )
-
+    mock_increment_clicks.assert_awaited_once_with("abc1234")
     session.commit.assert_awaited_once()

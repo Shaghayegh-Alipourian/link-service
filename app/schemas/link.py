@@ -1,8 +1,6 @@
-
 from datetime import datetime
 
-from pydantic import AnyHttpUrl, BaseModel, ConfigDict
-from pydantic import BaseModel, ConfigDict, HttpUrl
+from pydantic import AnyHttpUrl, BaseModel, ConfigDict, HttpUrl
 
 
 class LinkCreate(BaseModel):
@@ -28,10 +26,10 @@ class LinkCreated(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class LinkStats(BaseModel):
     id: int
     short_code: str
     original_url: str
     clicks: int
     created_at: datetime
-

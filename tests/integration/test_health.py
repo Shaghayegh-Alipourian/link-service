@@ -6,24 +6,18 @@ from httpx import AsyncClient
 async def test_health(
     client: AsyncClient,
 ) -> None:
-    response = await client.get(
-        "/health"
-    )
+    response = await client.get("/health")
 
     assert response.status_code == 200
 
-    assert response.json() == {
-        "status": "ok"
-    }
+    assert response.json() == {"status": "ok"}
 
 
 @pytest.mark.asyncio
 async def test_request_id_header(
     client: AsyncClient,
 ) -> None:
-    response = await client.get(
-        "/health"
-    )
+    response = await client.get("/health")
 
     assert response.status_code == 200
 

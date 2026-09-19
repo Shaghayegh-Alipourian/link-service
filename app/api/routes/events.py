@@ -11,10 +11,12 @@ router = APIRouter(
 )
 
 
-async def event_stream() -> AsyncGenerator[
-    str,
-    None,
-]:
+async def event_stream() -> (
+    AsyncGenerator[
+        str,
+        None,
+    ]
+):
     counter = 0
 
     try:
@@ -26,11 +28,7 @@ async def event_stream() -> AsyncGenerator[
                 "counter": counter,
             }
 
-            yield (
-                "data: "
-                f"{json.dumps(payload)}"
-                "\n\n"
-            )
+            yield (f"data: {json.dumps(payload)}\n\n")
 
             await asyncio.sleep(2)
 

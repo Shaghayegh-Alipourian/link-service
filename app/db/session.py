@@ -1,4 +1,3 @@
-
 from collections.abc import AsyncGenerator
 
 from redis.asyncio import Redis
@@ -33,4 +32,3 @@ def create_redis() -> Redis:
         settings.redis_url,
         decode_responses=True,
     )
-
