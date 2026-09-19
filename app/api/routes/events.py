@@ -11,12 +11,10 @@ router = APIRouter(
 )
 
 
-async def event_stream() -> (
-    AsyncGenerator[
-        str,
-        None,
-    ]
-):
+async def event_stream() -> AsyncGenerator[
+    str,
+    None,
+]:
     counter = 0
 
     try:
